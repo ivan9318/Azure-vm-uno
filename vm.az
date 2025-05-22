@@ -1,0 +1,19 @@
+#Como crear una maquina virtual en azure desde la Consola del cloud shell con bash
+1.- Crea un grupo de recursos
+az group create --name cli --location eastus
+2.- Creamos la maquina virtual
+az vm create --resource-group cli --name ivanCli --image Ubuntu2404 --admin-username ivanalel --authentication-type password --admin-password $password --l
+ocation eastus
+{
+  "fqdns": "",
+  "id": "/subscriptions/7acf06c5-7212-4171-8005-b0dbf60b48e6/resourceGroups/cli/providers/Microsoft.Compute/virtualMachines/ivanCli",
+  "location": "eastus",
+  "macAddress": "7C-ED-8D-21-F3-B1",
+  "powerState": "VM running",
+  "privateIpAddress": "10.0.0.4",
+  "publicIpAddress": "20.172.177.69",
+  "resourceGroup": "cli",
+  "zones": ""
+}
+
+
