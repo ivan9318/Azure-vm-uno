@@ -2,18 +2,82 @@
 1.- Crea un grupo de recursos
 az group create --name cli --location eastus
 2.- Creamos la maquina virtual
-az vm create --resource-group cli --name ivanCli --image Ubuntu2404 --admin-username ivanalel --authentication-type password --admin-password $password --l
-ocation eastus
+az vm create --name "vm-ivan" --resource-group "prueba" --image "RedHat:RHEL:8-LVM:latest" --size "Standard_B1s" --admin-username "ivan" --generate-ssh-keys
+Consider upgrading security for your workloads using Azure Trusted Launch VMs. To know more about Trusted Launch, please visit https://aka.ms/TrustedLaunch.
 {
   "fqdns": "",
-  "id": "/subscriptions/7acf06c5-7212-4171-8005-b0dbf60b48e6/resourceGroups/cli/providers/Microsoft.Compute/virtualMachines/ivanCli",
-  "location": "eastus",
-  "macAddress": "7C-ED-8D-21-F3-B1",
+  "id": "/subscriptions/7acf06c5-7212-4171-8005-b0dbf60b48e6/resourceGroups/prueba/providers/Microsoft.Compute/virtualMachines/vm-ivan",
+  "location": "westus",
+  "macAddress": "00-22-48-02-C1-F2",
   "powerState": "VM running",
   "privateIpAddress": "10.0.0.4",
-  "publicIpAddress": "20.172.177.69",
-  "resourceGroup": "cli",
+  "publicIpAddress": "20.245.93.247",
+  "resourceGroup": "prueba",
   "zones": ""
 }
+3.-Creamos un disco extra en la cli
+az disk create --name "extra" --resource-group "prueba" --size-gb 4 --sku "Standard_LRS"
+{
+  "creationData": {
+    "createOption": "Empty"
+  },
+  "diskIOPSReadWrite": 500,
+  "diskMBpsReadWrite": 60,
+  "diskSizeBytes": 4294967296,
+  "diskSizeGB": 4,
+  "diskState": "Unattached",
+  "encryption": {
+    "type": "EncryptionAtRestWithPlatformKey"
+  },
+  "id": "/subscriptions/7acf06c5-7212-4171-8005-b0dbf60b48e6/resourceGroups/prueba/providers/Microsoft.Compute/disks/extra",
+  "location": "westus",
+  "name": "extra",
+  "networkAccessPolicy": "AllowAll",
+  "provisioningState": "Succeeded",
+  "publicNetworkAccess": "Enabled",
+  "resourceGroup": "prueba",
+  "sku": {
+    "name": "Standard_LRS",
+    "tier": "Standard"
+  },
+  "tags": {},
+  "timeCreated": "2025-05-26T02:56:39.8219732+00:00",
+  "type": "Microsoft.Compute/disks",
+  "uniqueId": "df6be459-ab82-408f-8d07-8600cccdcd8e"
+}
 
+4.- Lo adjuntamos a la vm
+az vm disk attach --resource-group ivan --vm-name vmialm --name "ivan-disk"
+
+5.-Mostramos los valores de la vm
+ivan [ ~ ]$ az vm show --resource-group ivan --name vmialm -d
+
+6.-VAmos a actualizar el SO
+
+sudo apt update && sudo apt upgrade -y
+
+7.- hay que instalar docker
+
+7.1- Instalamos dependencias
+
+sudo apt install \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release -y
+
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
+    sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) \
+  signed-by=/etc/apt/keyrings/docker.gpg] \
+  https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+
+7.2 Instalamos docker
+sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
 
